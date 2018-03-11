@@ -530,6 +530,8 @@ We did nothing special here but used the default way to [export the trained mode
 
 ## Script for using the inference model for object detection
 
+### Object detection server
+
 As our trained model is quite huge and slow we decided to run inference in the cloud as well. That means that the Raspberry Pi
 needs to upload its image data to the cloud instance for further detection. Therefor we adapted the script of
 the [Jupyter noterbook tutorial](https://github.com/tensorflow/models/blob/master/research/object_detection/object_detection_tutorial.ipynb).
@@ -781,11 +783,11 @@ finally:
 
 The script essentially starts two seperate threads: one for listening for new images coming from the Raspberry Pi
 and one for running the object detection on the latest image. the result of the inference gets saved to a file.
-Put this script within `models/research/object_detection` and run it from there.
+Put this script within `models/research/object_detection` and run it from there. Run it before you run the client.
 
-## Script for publishing the inferred images
+### Image capturing client
 
-The client-side part (Raspy) also runy a Python script. It is based on the Raspberry Pi Camera documention and is basically
+The client-side (Raspy) also runs a Python script. It is based on the Raspberry Pi Python Camera documention and is basically
 a Python script that captures images from the cam and sends them to the cloud instance with a very simplistic protocol.
 You can find the base script [here](https://picamera.readthedocs.io/en/release-1.10/recipes1.html#capturing-to-a-network-stream).
 
@@ -797,6 +799,10 @@ TODO
 
 It is different from the orginial in that it is more fault-tolerant. It trys to reconnect to the server in
 case the connection gets lost or the camera captures a faulty image.
+
+Run that script after you started the server.
+
+## Script for publishing the inferred images
 
 So far the inferred images get saved on the server, and by using SCP we can download and have a look at them. For our demonstration
 we want to show the results as a live stream on our laptop. Therefor we developed a tiny Node application using JavaScript
@@ -892,6 +898,9 @@ fs.watchFile(file,{interval:50}, (curr, prev) => {
 });
 ```
 
+Put these files into the same directory on your instance. Run `npm install` to install the required packages
+and then run `node server.js` to start the web server.
+
 **Do not forget to open the incoming network port (here 8080) of the security group of your instance in AWS.**
 
 The node server listens for changed with the inferred image file and pushes its contents base64-encoded to the clients
@@ -902,6 +911,18 @@ We tried to write such a serverside script just within the Python detection scri
 threads of the detection and the threads and/or loops of the web server (AIOHTTP) and the WebSocket in sync.
 We are not very confident with Python's deeper internals that is why we sticked with the simple node solution so far.
 If you have any suggestions on how one could solve this, we would really like to hear them.
+
+You can now go to http://ec2-xx-xx-xx-xx.eu-central-1.compute.amazonaws.com:8080 and be able to see the inferred images
+in live (with a delay of some seconds of course).
+
+#### Notes on startup
+
+To successfully run the whole setup, you should do the following steps in the given order:
+
+1. Start the object-detection Python script that also listens for images coming from the Raspberry Pi.
+2. Start the node application.
+3. Open you browser and enter the public DNS name of your AWS instane followed by the web server port (something like http://ec2-xx-xx-xx-xx.eu-central-1.compute.amazonaws.com:8080).
+4. Run the capturing and sending Python script on the Raspberry Pi.
 
 [robot]: https://github.com/vituslehner/permaculture-object-detection/raw/master/assets/robot-picture.png "Robot Perla"
 [demo]: https://github.com/vituslehner/permaculture-object-detection/raw/master/assets/demo-setup.png "Robot Perla Demo Setup"
