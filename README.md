@@ -53,14 +53,29 @@ to the MINDSTORMS robot, which made a very nice setup for demonstration purposes
 is very well documented by LEGO and tons of other internet resources, we will focus here on describing the object detection
 backbone with the Raspy.
 
-## Structure of this README
+## Table of Contents
 
 The content of this README can roughly be divided into two parts: one for setting up the cloud and training of a neural net for 
 object detection, and one for wiring the Raspy to the cloud and back.
 
-## Table of Contents
-
-TODO
+- [Object detection in the context of permaculture](#object-detection-in-the-context-of-permaculture)
+  - [Rationales of this repository](#rationales-of-this-repository)
+  - [About us](#about-us)
+  - [Prequisites](#prequisites)
+  - [Structure of this README](#structure-of-this-readme)
+  - [Table of Contents](#table-of-contents)
+- [Part I: Preparation of AWS cloud, selection of training data and training using Tensorflow](#part-i-preparation-of-aws-cloud-selection-of-training-data-and-training-using-tensorflow)
+  - [Setup AWS EC2 computing instance](#setup-aws-ec2-computing-instance)
+  - [Setting up the Tensorflow environment](#setting-up-the-tensorflow-environment)
+  - [Training an object detection model](#training-an-object-detection-model)
+    - [Prepare and preprocess training images](#prepare-and-preprocess-training-images)
+    - [Convert images to Tensorflow-readable data format](#convert-images-to-tensorflow-readable-data-format)
+    - [Train the model](#train-the-model)
+      - [Notes on detection model](#notes-on-detection-model)
+    - [Export the trained model](#export-the-trained-model)
+- [Part II: Use the trained object detection model for inference with a Raspberry Pi setup](#part-ii-use-the-trained-object-detection-model-for-inference-with-a-raspberry-pi-setup)
+  - [Script for using the inference model for object detection](#script-for-using-the-inference-model-for-object-detection)
+  - [Script for publishing the inferred images](#script-for-publishing-the-inferred-images)
 
 # Part I: Preparation of AWS cloud, selection of training data and training using Tensorflow
 
