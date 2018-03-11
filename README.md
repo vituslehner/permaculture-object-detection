@@ -20,7 +20,7 @@ usage in permacultural context.
 This repository should provide some guidance on how to get grip on the topic of deep learning 
 and object detection using Tensorflow. It provides links to helpful online resources, sample codes and further ideas
 on how to use Tensorflow Object Detection API. This is not going to be a comprehensive step-by-step tutorial
-but more a collection of useful information (we think).
+but more a collection of what we think is useful information.
 
 The major objective of permaculture is to inhabit and use earth in a sustainable fashion. Reflecting on this,
 we feel that we should publish the understanding we gained during the building of our prototype. This way
@@ -503,7 +503,7 @@ That is because we did not include the COCO dataset for our further training and
 other classes. The means the neural net forgets about the previous classes more or less. As of now, there seems to be
 no easy way to extend a trained model with new classes.
 
-In our case, the Loss rate shown in Tensorboard sank quite fast. We guess this is due to the relatively simple
+In our case, the Loss rate shown in Tensorboard decreased quite fast. We guess this is due to the relatively simple
 object and the overfitting dataset.
 
 ![TotalLoss for tomato training in Tensorboard][totalloss]
@@ -512,7 +512,9 @@ object and the overfitting dataset.
 
 We did nothing special here but used the default way to [export the trained model for inference](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/exporting_models.md).
 
-## Part II: Use the trained object detection model for inference with a Raspberry Pi setup
+# Part II: Use the trained object detection model for inference with a Raspberry Pi setup
+
+## Script for using the inference model for object detection
 
 As our trained model is quite huge and slow we decided to run inference in the cloud as well. That means that the Raspberry Pi
 needs to upload its image data to the cloud instance for further detection. Therefor we adapted the script of
@@ -766,6 +768,8 @@ finally:
 The script essentially starts two seperate threads: one for listening for new images coming from the Raspberry Pi
 and one for running the object detection on the latest image. the result of the inference gets saved to a file.
 Put this script within `models/research/object_detection` and run it from there.
+
+## Script for publishing the inferred images
 
 The client-side part (Raspy) also runy a Python script. It is based on the Raspberry Pi Camera documention and is basically
 a Python script that captures images from the cam and sends them to the cloud instance with a very simplistic protocol.
