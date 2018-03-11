@@ -62,7 +62,6 @@ object detection, and one for wiring the Raspy to the cloud and back.
   - [Rationales of this repository](#rationales-of-this-repository)
   - [About us](#about-us)
   - [Prequisites](#prequisites)
-  - [Structure of this README](#structure-of-this-readme)
   - [Table of Contents](#table-of-contents)
 - [Part I: Preparation of AWS cloud, selection of training data and training using Tensorflow](#part-i-preparation-of-aws-cloud-selection-of-training-data-and-training-using-tensorflow)
   - [Setup AWS EC2 computing instance](#setup-aws-ec2-computing-instance)
