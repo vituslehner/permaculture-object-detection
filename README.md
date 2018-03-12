@@ -67,14 +67,17 @@ object detection, and one for wiring the Raspy to the cloud and back.
   - [Setup AWS EC2 computing instance](#setup-aws-ec2-computing-instance)
   - [Setting up the Tensorflow environment](#setting-up-the-tensorflow-environment)
   - [Training an object detection model](#training-an-object-detection-model)
-    - [Prepare and preprocess training images](#prepare-and-preprocess-training-images)
-    - [Convert images to Tensorflow-readable data format](#convert-images-to-tensorflow-readable-data-format)
-    - [Train the model](#train-the-model)
+    - [1. Prepare and preprocess training images](#1-prepare-and-preprocess-training-images)
+    - [2. Convert images to Tensorflow-readable data format](#2-convert-images-to-tensorflow-readable-data-format)
+    - [3. Train the model](#3-train-the-model)
       - [Notes on detection model](#notes-on-detection-model)
-    - [Export the trained model](#export-the-trained-model)
+    - [4. Export the trained model](#4-export-the-trained-model)
 - [Part II: Use the trained object detection model for inference with a Raspberry Pi setup](#part-ii-use-the-trained-object-detection-model-for-inference-with-a-raspberry-pi-setup)
   - [Script for using the inference model for object detection](#script-for-using-the-inference-model-for-object-detection)
-  - [Script for publishing the inferred images](#script-for-publishing-the-inferred-images)
+    - [Object detection server](#object-detection-server)
+    - [Image capturing client](#image-capturing-client)
+  - [Web app for showing the inferred images](#web-app-for-showing-the-inferred-images)
+      - [Notes on startup](#notes-on-startup)
 
 # Part I: Preparation of AWS cloud, selection of training data and training using Tensorflow
 
