@@ -173,7 +173,7 @@ To keep track of the whole process, these are the main steps of deep learning an
 3. Train the model
 4. Export the trained model
 
-### Prepare and preprocess training images
+### 1. Prepare and preprocess training images
 
 For our tomato detection use case we had to select a bunch of tomato pictures which we esseantially took
 from Google images. We minded the image sizes as they should not be too small or too big (600-900px seems well).
@@ -237,7 +237,7 @@ enough work with labeling hundreds of tomatos anyway. For labeling the images we
 
 ![LabelImg Usage][labelimg]
 
-### Convert images to Tensorflow-readable data format
+### 2. Convert images to Tensorflow-readable data format
 
 After exporting the labeled training data from LabelImg, we had to convert it to the TFRecord format.
 We based our converter on the [conversion script of Sara Robinson](https://github.com/sararob/tswift-detection/blob/master/convert_to_tfrecord.py) (who based hers on the one of Dat Tran).
@@ -344,12 +344,12 @@ if __name__ == '__main__':
 
 That way we converted the training as well as the test data.
 
-### Train the model
+### 3. Train the model
 
 For training the model we essentially followed the basic steps of most guides, like the ones of Dat Tran or Sara Robinson.
 We are training in the cloud but control the whole process ourselves using shell. Google provides
 some nice documenation on [how to train a model locally](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/running_locally.md). Our object detection pipeline config 
-is based on Google's pets example and looked like that:
+is based on Google's pets example and looks like that:
 
 ```
 model { 
@@ -493,7 +493,7 @@ eval_input_reader: {
 
 ```
 
-Our `perla_label_map.pbtxt` file looked like this:
+Our `perla_label_map.pbtxt` file looks like this:
 ```
 item {
   id: 1
@@ -522,7 +522,7 @@ object and the overfitting dataset.
 
 ![TotalLoss for tomato training in Tensorboard][totalloss]
 
-### Export the trained model
+### 4. Export the trained model
 
 We did nothing special here but used the default way to [export the trained model for inference](https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/exporting_models.md).
 
@@ -794,7 +794,83 @@ You can find the base script [here](https://picamera.readthedocs.io/en/release-1
 Our script looks like that:
 
 ```python
-TODO
+import io
+import socket
+import struct
+import time
+import picamera
+import sys
+import traceback
+
+target = ('ec2-xx-xx-xx-xx.eu-central-1.compute.amazonaws.com', 8006)
+
+camera = picamera.PiCamera()
+camera.resolution = (800, 600)
+# Start a preview and let the camera warm up for 2 seconds
+camera.start_preview()
+time.sleep(2)
+
+
+while True:
+  
+  try:
+  
+      # Connect a client socket to my_server:8000 (change my_server to the
+      # hostname of your server)
+      client_socket = socket.socket()
+      client_socket.connect(target)
+      
+      # Make a file-like object out of the connection
+      connection = client_socket.makefile('wb')
+ 
+      # Note the start time and construct a stream to hold image data
+      # temporarily (we could write it directly to connection but in this
+      # case we want to find out the size of each capture first to keep
+      # our protocol simple)
+      start = time.time()
+      stream = io.BytesIO()
+      for foo in camera.capture_continuous(stream, 'jpeg'):
+          try:
+              # Write the length of the capture to the stream and flush to
+              # ensure it actually gets sent
+              connection.write(struct.pack('<L', stream.tell()))
+              connection.flush()
+              # Rewind the stream and send the image data over the wire
+              stream.seek(0)
+              connection.write(stream.read())
+              
+              # Reset the stream for the next capture
+              stream.seek(0)
+              stream.truncate()
+          except:
+              err = sys.exc_info()[0]
+              print('what happened?', err)
+              traceback.print_exc()
+              raise
+              
+      # Write a length of zero to the stream to signal we're done
+  except:
+      try:
+        connection.close()
+        client_socket.close()
+      except:
+        print('ignore2')
+      print('retry') 
+      print('Waiting for 5 sec too')
+      time.sleep(5)
+      try:
+        client_socket = socket.socket()
+        client_socket.connect(target)
+        connection = client_socket.makefile('wb')
+      except:
+        err = sys.exc_info()[0]
+        print('reconnect failed', err) 
+  finally:
+      try:
+        connection.close()
+        client_socket.close()
+      except:
+        print('ignore')
 ```
 
 It is different from the orginial in that it is more fault-tolerant. It trys to reconnect to the server in
@@ -802,7 +878,7 @@ case the connection gets lost or the camera captures a faulty image.
 
 Run that script after you started the server.
 
-## Script for publishing the inferred images
+## Web app for showing the inferred images
 
 So far the inferred images get saved on the server, and by using SCP we can download and have a look at them. For our demonstration
 we want to show the results as a live stream on our laptop. Therefor we developed a tiny Node application using JavaScript
@@ -821,7 +897,7 @@ This mini application only consists of `package.json`, `index.html` and `server.
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
-  "author": "Vitus Lehner",
+  "author": "Project Perla",
   "license": "ISC",
   "dependencies": {
     "express": "^4.16.2",
