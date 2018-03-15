@@ -192,6 +192,7 @@ We manually downloaded all the images and used a short script [inspired by Sara 
 The script seemed a bit buggy so we fixed some things. We also added the capability to rename the files in a 
 nice manner on the fly:
 
+`resize_rename_images.py`
 ```python
 # Copyright 2017 Google LLC
 
@@ -242,12 +243,13 @@ enough work with labeling hundreds of tomatos anyway. For labeling the images we
 
 ### 2. Convert images to Tensorflow-readable data format
 
-After exporting the labeled training data from LabelImg, we had to convert it to the TFRecord format.
+After exporting the labeled training data from LabelImg in Pascal VOC format, we had to convert it to the TFRecord format.
 We based our converter on the [conversion script of Sara Robinson](https://github.com/sararob/tswift-detection/blob/master/convert_to_tfrecord.py) (who based hers on the one of Dat Tran).
 In contrast to Sara's Taylow Swift detector where an image can only contain *one* Taylor Swift,
 our training images can for sure contain more than one tomato. You can find it below. For usage, see
 Sara's article.
 
+`pascal_to_tfrecord.py`
 ```python
 # Copyright 2017 Google LLC
 
@@ -543,6 +545,7 @@ run the inference and provide the resulting images with labeled boxes (by saving
 
 Our script looks like that:
 
+`models/research/object_detection/listen_and_detect_objects.py`
 ```python
 # coding: utf-8
 
@@ -796,6 +799,7 @@ You can find the base script [here](https://picamera.readthedocs.io/en/release-1
 
 Our script looks like that:
 
+`capture_and_send_images.py`
 ```python
 import io
 import socket
@@ -890,6 +894,7 @@ inference result, we used WebSockets to push any new images to the web browser.
 
 This mini application only consists of `package.json`, `index.html` and `server.js` which you can find below (in the given order).
 
+`package.json`
 ```json
 {
   "name": "project-perla-node-server",
@@ -909,6 +914,7 @@ This mini application only consists of `package.json`, `index.html` and `server.
 }
 ```
 
+`index.html`
 ```html
 <!DOCTYPE html>
 <html>
@@ -947,8 +953,8 @@ height:100%;}
 </html>​
 ```
 
+`server.js`
 ```js
-
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
